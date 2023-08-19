@@ -36,7 +36,8 @@ public class AuthService {
         validateDuplicateNickname(userSignUpRequestDto.getNickname());
         String platformId = kakaoOAuthProvider.getKakaoPlatformId(token);
         validateDuplicateUser(platformId);
-        User savedUser = User.createUser(platformId, null, userSignUpRequestDto.getNickname());
+        User user = User.createUser(platformId, null, userSignUpRequestDto.getNickname());
+        User savedUser = userRepository.save(user);
         Token issuedToken = jwtProvider.issueToken(savedUser.getId());
         updateRefreshToken(savedUser, issuedToken.getRefreshToken());
         return UserAuthResponseDto.of(issuedToken, savedUser);
