@@ -25,4 +25,8 @@ public class User {
                 .nickname(nickname)
                 .build();
     }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }
