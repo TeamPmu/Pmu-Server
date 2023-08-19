@@ -44,6 +44,8 @@ public enum ErrorCode {
      * 409 Conflict
      */
     CONFLICT(HttpStatus.CONFLICT, "이미 존재하는 리소스입니다."),
+    DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "이미 존재하는 닉네임입니다."),
+    DUPLICATE_USER(HttpStatus.CONFLICT, "이미 존재하는 회원입니다."),
 
     /**
      * 500 Internal Server Error
