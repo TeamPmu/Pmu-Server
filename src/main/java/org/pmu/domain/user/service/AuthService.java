@@ -14,8 +14,6 @@ import org.pmu.global.error.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 @Transactional
 @Service
@@ -43,23 +41,36 @@ public class AuthService {
         return UserAuthResponseDto.of(issuedToken, savedUser);
     }
 
+    public Token reissue(String refreshToken) {
+        jwtProvider.validateRefreshToken(refreshToken);
+        Long userId = jwtProvider.getSubject(refreshToken);
+        User findUser = getUser(userId);
+        jwtProvider.equalsRefreshToken(refreshToken, findUser.getRefreshToken());
+        Token issuedToken = jwtProvider.issueToken(userId);
+        updateRefreshToken(findUser, issuedToken.getRefreshToken());
+        return issuedToken;
+    }
+
     private User getUser(String platformId) {
         return userRepository.findUserByPlatformId(platformId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 
     private void validateDuplicateNickname(String nickname) {
-        List<User> findUsers = userRepository.findUsersByNickname(nickname);
-        if (!findUsers.isEmpty()) {
+        if (userRepository.existsUserByNickname(nickname)) {
             throw new ConflictException(ErrorCode.DUPLICATE_NICKNAME);
         }
     }
 
     private void validateDuplicateUser(String platformId) {
-        List<User> findUsers = userRepository.findUsersByPlatformId(platformId);
-        if (!findUsers.isEmpty()) {
+        if (userRepository.existsUserByPlatformId(platformId)) {
             throw new ConflictException(ErrorCode.DUPLICATE_USER);
         }
+    }
+
+    private User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 
     private void updateRefreshToken(User user, String refreshToken) {
