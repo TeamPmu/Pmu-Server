@@ -6,6 +6,7 @@ import org.pmu.domain.user.dto.response.UserAuthResponseDto;
 import org.pmu.domain.user.service.AuthService;
 import org.pmu.global.common.BaseResponse;
 import org.pmu.global.common.SuccessCode;
+import org.pmu.global.config.jwt.Token;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,7 +22,7 @@ public class AuthApiController {
     public ResponseEntity<BaseResponse<?>> signUp(@RequestHeader("Authorization") final String token) {
         final UserAuthResponseDto userAuthResponseDto = authService.signIn(token);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(BaseResponse.of(SuccessCode.CREATED, userAuthResponseDto));
+                .body(BaseResponse.of(SuccessCode.OK, userAuthResponseDto));
     }
 
     @PostMapping("/signup")
@@ -30,5 +31,12 @@ public class AuthApiController {
         final UserAuthResponseDto userAuthResponseDto = authService.signUp(token, userSignUpRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(BaseResponse.of(SuccessCode.CREATED, userAuthResponseDto));
+    }
+
+    @GetMapping("/reissue")
+    public ResponseEntity<BaseResponse<?>> reissue(@RequestHeader("Authorization") final String refreshToken) {
+        final Token issuedToken = authService.reissue(refreshToken);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponse.of(SuccessCode.OK, issuedToken));
     }
 }
