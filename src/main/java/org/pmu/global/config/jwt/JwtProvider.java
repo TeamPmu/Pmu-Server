@@ -26,18 +26,6 @@ public class JwtProvider {
         return Token.of(generateToken(userId, true), generateToken(userId, false));
     }
 
-    private String generateToken(Long userId, boolean isAccessToken) {
-        final Date now = new Date();
-        final Date expiration = new Date(now.getTime() + (isAccessToken ? ACCESS_TOKEN_EXPIRE_TIME : REFRESH_TOKEN_EXPIRE_TIME));
-        return Jwts.builder()
-                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                .setSubject(String.valueOf(userId))
-                .setIssuedAt(now)
-                .setExpiration(expiration)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
     public void validateAccessToken(String accessToken) {
         try {
             getJwtParser().parseClaimsJws(accessToken);
@@ -58,10 +46,28 @@ public class JwtProvider {
         }
     }
 
+    public void equalsRefreshToken(String refreshToken, String storedRefreshToken) {
+        if (!refreshToken.equals(storedRefreshToken)) {
+            throw new UnauthorizedException(ErrorCode.NOT_MATCH_REFRESH_TOKEN);
+        }
+    }
+
     public Long getSubject(String token) {
         return Long.valueOf(getJwtParser().parseClaimsJws(token)
                 .getBody()
                 .getSubject());
+    }
+
+    private String generateToken(Long userId, boolean isAccessToken) {
+        final Date now = new Date();
+        final Date expiration = new Date(now.getTime() + (isAccessToken ? ACCESS_TOKEN_EXPIRE_TIME : REFRESH_TOKEN_EXPIRE_TIME));
+        return Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .setSubject(String.valueOf(userId))
+                .setIssuedAt(now)
+                .setExpiration(expiration)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     private JwtParser getJwtParser() {
