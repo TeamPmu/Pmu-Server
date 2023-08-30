@@ -56,6 +56,10 @@ public class AuthService {
         deleteRefreshToken(findUser);
     }
 
+    public void withdraw(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
     private User getUser(String platformId) {
         return userRepository.findUserByPlatformId(platformId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
