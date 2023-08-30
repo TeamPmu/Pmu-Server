@@ -6,6 +6,7 @@ import org.pmu.domain.user.dto.response.UserAuthResponseDto;
 import org.pmu.domain.user.service.AuthService;
 import org.pmu.global.common.BaseResponse;
 import org.pmu.global.common.SuccessCode;
+import org.pmu.global.common.UserId;
 import org.pmu.global.config.jwt.Token;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,5 +39,12 @@ public class AuthApiController {
         final Token issuedToken = authService.reissue(refreshToken);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponse.of(SuccessCode.OK, issuedToken));
+    }
+
+    @PatchMapping("/signout")
+    public ResponseEntity<BaseResponse<?>> signOut(@UserId Long userId) {
+        authService.signOut(userId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponse.of(SuccessCode.OK, null));
     }
 }
