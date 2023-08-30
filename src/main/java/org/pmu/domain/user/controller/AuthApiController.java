@@ -47,4 +47,11 @@ public class AuthApiController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponse.of(SuccessCode.OK, null));
     }
+
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<BaseResponse<?>> withdraw(@UserId Long userId) {
+        authService.withdraw(userId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponse.of(SuccessCode.OK, null));
+    }
 }
