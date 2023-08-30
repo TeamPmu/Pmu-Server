@@ -51,6 +51,11 @@ public class AuthService {
         return issuedToken;
     }
 
+    public void signOut(Long userId) {
+        User findUser = getUser(userId);
+        deleteRefreshToken(findUser);
+    }
+
     private User getUser(String platformId) {
         return userRepository.findUserByPlatformId(platformId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
@@ -75,5 +80,9 @@ public class AuthService {
 
     private void updateRefreshToken(User user, String refreshToken) {
         user.updateRefreshToken(refreshToken);
+    }
+
+    private void deleteRefreshToken(User findUser) {
+        findUser.updateRefreshToken(null);
     }
 }
