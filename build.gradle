@@ -36,6 +36,9 @@ dependencies {
 
     // open feign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.0.3'
+
+    // aws
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
 
 tasks.named('test') {
