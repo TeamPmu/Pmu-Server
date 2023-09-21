@@ -3,6 +3,7 @@ package org.pmu.domain.user.service;
 import lombok.RequiredArgsConstructor;
 import org.pmu.domain.user.auth.KakaoOAuthProvider;
 import org.pmu.domain.user.domain.User;
+import org.pmu.domain.user.dto.request.UserReissueRequestDto;
 import org.pmu.domain.user.dto.request.UserSignUpRequestDto;
 import org.pmu.domain.user.dto.response.UserAuthResponseDto;
 import org.pmu.domain.user.repository.UserRepository;
@@ -11,6 +12,7 @@ import org.pmu.global.config.jwt.Token;
 import org.pmu.global.error.ConflictException;
 import org.pmu.global.error.EntityNotFoundException;
 import org.pmu.global.error.ErrorCode;
+import org.pmu.global.error.UnauthorizedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,12 +48,12 @@ public class AuthService {
         return UserAuthResponseDto.of(issuedToken, savedUser);
     }
 
-    public Token reissue(String refreshToken) {
-        jwtProvider.validateRefreshToken(refreshToken);
-        Long userId = jwtProvider.getSubject(refreshToken);
+    @Transactional(noRollbackFor = UnauthorizedException.class)
+    public Token reissue(String refreshToken, UserReissueRequestDto userReissueRequestDto) {
+        Long userId = userReissueRequestDto.getUserId();
         User findUser = getUser(userId);
-        jwtProvider.equalsRefreshToken(refreshToken, findUser.getRefreshToken());
-        Token issuedToken = jwtProvider.issueToken(userId);
+        validateRefreshToken(userId, refreshToken, findUser.getRefreshToken());
+        Token issuedToken = issueAccessTokenAndRefreshToken(findUser);
         updateRefreshToken(findUser, issuedToken.getRefreshToken());
         return issuedToken;
     }
@@ -88,17 +90,27 @@ public class AuthService {
         }
     }
 
+    private void validateRefreshToken(Long userId, String refreshToken, String storedRefreshToken) {
+        try {
+            jwtProvider.validateRefreshToken(refreshToken);
+            jwtProvider.equalsRefreshToken(refreshToken, storedRefreshToken);
+        } catch (UnauthorizedException e) {
+            signOut(userId);
+            throw e;
+        }
+    }
+
     private Token issueAccessTokenAndRefreshToken(User user) {
         return jwtProvider.issueToken(user.getId());
+    }
+
+    private void updateRefreshToken(User user, String refreshToken) {
+        user.updateRefreshToken(refreshToken);
     }
 
     private User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
-    }
-
-    private void updateRefreshToken(User user, String refreshToken) {
-        user.updateRefreshToken(refreshToken);
     }
 
     private void deleteRefreshToken(User findUser) {
