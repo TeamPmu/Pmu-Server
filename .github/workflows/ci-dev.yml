@@ -1,0 +1,36 @@
+name: Pmu Development Server CI
+
+on:
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🍃 체크아웃 합니다.
+        uses: actions/checkout@v3
+
+      - name: 🍃 JDK 17로 설정합니다.
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: 🍃 application.yml 파일을 생성합니다.
+        run: |
+          cd ./src/main
+          mkdir resources
+          cd ./resources
+          touch ./application.yml
+          echo "$APPLICATION" > ./application.yml
+        env:
+          APPLICATION: ${{ secrets.APPLICATION }}
+
+      - name: 🍃 gradle build 를 위한 권한을 부여합니다.
+        run: chmod +x gradlew
+
+      - name: 🍃 gradle build 합니다.
+        run: ./gradlew clean build --exclude-task test
