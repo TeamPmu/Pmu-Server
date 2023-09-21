@@ -26,6 +26,10 @@ public class User {
                 .build();
     }
 
+    public void updateProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
