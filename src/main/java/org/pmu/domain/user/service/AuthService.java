@@ -14,6 +14,8 @@ import org.pmu.global.error.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.pmu.domain.user.domain.User.createUser;
+
 @RequiredArgsConstructor
 @Transactional
 @Service
@@ -25,7 +27,9 @@ public class AuthService {
     public UserAuthResponseDto signIn(String token) {
         String platformId = kakaoOAuthProvider.getKakaoPlatformId(token);
         User findUser = getUser(platformId);
-        Token issuedToken = jwtProvider.issueToken(findUser.getId());
+        String profileImageUrl = kakaoOAuthProvider.getKakaoUserProfileImageUrl(token);
+        updateProfileImageUrl(findUser, profileImageUrl);
+        Token issuedToken = issueAccessTokenAndRefreshToken(findUser);
         updateRefreshToken(findUser, issuedToken.getRefreshToken());
         return UserAuthResponseDto.of(issuedToken, findUser);
     }
@@ -34,9 +38,10 @@ public class AuthService {
         validateDuplicateNickname(userSignUpRequestDto.getNickname());
         String platformId = kakaoOAuthProvider.getKakaoPlatformId(token);
         validateDuplicateUser(platformId);
-        User user = User.createUser(platformId, null, userSignUpRequestDto.getNickname());
+        String profileImageUrl = kakaoOAuthProvider.getKakaoUserProfileImageUrl(token);
+        User user = createUser(platformId, profileImageUrl, userSignUpRequestDto.getNickname());
         User savedUser = userRepository.save(user);
-        Token issuedToken = jwtProvider.issueToken(savedUser.getId());
+        Token issuedToken = issueAccessTokenAndRefreshToken(savedUser);
         updateRefreshToken(savedUser, issuedToken.getRefreshToken());
         return UserAuthResponseDto.of(issuedToken, savedUser);
     }
@@ -65,6 +70,12 @@ public class AuthService {
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 
+    private void updateProfileImageUrl(User user, String profileImageUrl) {
+        if (!user.getProfileImageUrl().equals(profileImageUrl)) {
+            user.updateProfileImageUrl(profileImageUrl);
+        }
+    }
+
     private void validateDuplicateNickname(String nickname) {
         if (userRepository.existsUserByNickname(nickname)) {
             throw new ConflictException(ErrorCode.DUPLICATE_NICKNAME);
@@ -75,6 +86,10 @@ public class AuthService {
         if (userRepository.existsUserByPlatformId(platformId)) {
             throw new ConflictException(ErrorCode.DUPLICATE_USER);
         }
+    }
+
+    private Token issueAccessTokenAndRefreshToken(User user) {
+        return jwtProvider.issueToken(user.getId());
     }
 
     private User getUser(Long userId) {
