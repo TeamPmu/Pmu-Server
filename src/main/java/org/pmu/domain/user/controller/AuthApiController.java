@@ -44,14 +44,14 @@ public class AuthApiController {
     }
 
     @PatchMapping("/signout")
-    public ResponseEntity<BaseResponse<?>> signOut(@UserId Long userId) {
+    public ResponseEntity<BaseResponse<?>> signOut(@UserId final Long userId) {
         authService.signOut(userId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponse.of(SuccessCode.OK, null));
     }
 
     @DeleteMapping("/withdraw")
-    public ResponseEntity<BaseResponse<?>> withdraw(@UserId Long userId) {
+    public ResponseEntity<BaseResponse<?>> withdraw(@UserId final Long userId) {
         authService.withdraw(userId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponse.of(SuccessCode.OK, null));
