@@ -8,7 +8,7 @@ import org.pmu.domain.user.domain.User;
 import org.pmu.global.config.jwt.Token;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class UserAuthResponseDto {
     private String accessToken;
