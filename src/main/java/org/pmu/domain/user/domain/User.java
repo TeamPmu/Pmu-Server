@@ -4,21 +4,33 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.pmu.domain.music.domain.Music;
+import org.pmu.global.common.BaseTimeEntity;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+import java.util.ArrayList;
+import java.util.List;
+
 @Builder(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @DynamicInsert
 @DynamicUpdate
 @Table(name = "users")
 @Entity
-public class User {
+public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
+    @Builder.Default
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private List<Music> musics = new ArrayList<>();
+    @Column(updatable = false)
     private String platformId;
+    @Column(updatable = false)
     private String profileImageUrl;
+    @Column(updatable = false)
     private String nickname;
     private String refreshToken;
 
