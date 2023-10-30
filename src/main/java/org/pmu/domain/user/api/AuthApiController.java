@@ -1,4 +1,4 @@
-package org.pmu.domain.user.controller;
+package org.pmu.domain.user.api;
 
 import lombok.RequiredArgsConstructor;
 import org.pmu.domain.user.dto.request.UserReissueRequestDto;

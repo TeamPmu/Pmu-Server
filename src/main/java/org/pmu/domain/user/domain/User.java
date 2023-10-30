@@ -42,6 +42,14 @@ public class User extends BaseTimeEntity {
                 .build();
     }
 
+    public void addMusic(Music music) {
+        musics.add(music);
+    }
+
+    public void removeMusic(Music music) {
+        musics.remove(music);
+    }
+
     public void updateProfileImageUrl(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;
     }
