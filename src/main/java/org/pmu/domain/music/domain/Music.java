@@ -28,4 +28,24 @@ public class Music extends BaseTimeEntity {
     private String singer;
     @Column(updatable = false)
     private String youtubeUrl;
+
+    public static Music createMusic(final User user, final String coverImageUrl, final String genre, final String title, final String singer, final String youtubeUrl) {
+        Music music = Music.builder()
+                .coverImageUrl(coverImageUrl)
+                .genre(genre)
+                .title(title)
+                .singer(singer)
+                .youtubeUrl(youtubeUrl)
+                .build();
+        music.changeUser(user);
+        return music;
+    }
+
+    public void changeUser(User user) {
+        if (this.user != null) {
+            this.user.removeMusic(this);
+        }
+        this.user = user;
+        user.addMusic(this);
+    }
 }
