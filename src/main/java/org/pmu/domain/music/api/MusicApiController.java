@@ -10,9 +10,7 @@ import org.pmu.global.common.UserId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/music")
@@ -26,5 +24,12 @@ public class MusicApiController {
         final MusicSaveResponseDto musicSaveResponseDto = musicService.saveMusic(userId, musicSaveRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(BaseResponse.of(SuccessCode.CREATED, musicSaveResponseDto));
+    }
+
+    @DeleteMapping("/{musicId}")
+    public ResponseEntity<BaseResponse<?>> deleteMusic(@PathVariable final Long musicId) {
+        musicService.deleteMusic(musicId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponse.of(SuccessCode.OK, null));
     }
 }
