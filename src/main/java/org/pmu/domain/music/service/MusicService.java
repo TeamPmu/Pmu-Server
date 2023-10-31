@@ -27,4 +27,9 @@ public class MusicService {
         Music savedMusic = musicRepository.save(music);
         return MusicSaveResponseDto.of(savedMusic);
     }
+
+    @Transactional
+    public void deleteMusic(Long musicId) {
+        musicRepository.deleteById(musicId);
+    }
 }
