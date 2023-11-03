@@ -3,6 +3,7 @@ package org.pmu.domain.music.service;
 import lombok.RequiredArgsConstructor;
 import org.pmu.domain.music.domain.Music;
 import org.pmu.domain.music.dto.request.MusicSaveRequestDto;
+import org.pmu.domain.music.dto.response.MusicDetailGetResponseDto;
 import org.pmu.domain.music.dto.response.MusicGetResponseDto;
 import org.pmu.domain.music.dto.response.MusicSaveResponseDto;
 import org.pmu.domain.music.repository.MusicRepository;
@@ -42,5 +43,10 @@ public class MusicService {
                 .stream()
                 .map(MusicGetResponseDto::of)
                 .toList();
+    }
+
+    public MusicDetailGetResponseDto findMusic(Long musicId) {
+        Music findMusic = musicRepository.findByIdOrThrow(musicId);
+        return MusicDetailGetResponseDto.of(findMusic);
     }
 }
