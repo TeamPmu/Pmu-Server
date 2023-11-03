@@ -2,6 +2,7 @@ package org.pmu.domain.music.api;
 
 import lombok.RequiredArgsConstructor;
 import org.pmu.domain.music.dto.request.MusicSaveRequestDto;
+import org.pmu.domain.music.dto.response.MusicDetailGetResponseDto;
 import org.pmu.domain.music.dto.response.MusicGetResponseDto;
 import org.pmu.domain.music.dto.response.MusicSaveResponseDto;
 import org.pmu.domain.music.service.MusicService;
@@ -43,5 +44,12 @@ public class MusicApiController {
         final List<MusicGetResponseDto> musics = musicService.findMusics(userId, pageable);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(BaseResponse.of(SuccessCode.OK, musics));
+    }
+
+    @GetMapping("/{musicId}")
+    public ResponseEntity<BaseResponse<?>> findMusic(@PathVariable final Long musicId) {
+        final MusicDetailGetResponseDto music = musicService.findMusic(musicId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(BaseResponse.of(SuccessCode.OK, music));
     }
 }
