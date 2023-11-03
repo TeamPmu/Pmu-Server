@@ -1,0 +1,1 @@
+ALTER TABLE music DROP COLUMN genre;

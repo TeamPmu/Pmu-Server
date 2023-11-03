@@ -21,18 +21,15 @@ public class Music extends BaseTimeEntity {
     @Column(updatable = false)
     private String coverImageUrl;
     @Column(updatable = false)
-    private String genre;
-    @Column(updatable = false)
     private String title;
     @Column(updatable = false)
     private String singer;
     @Column(updatable = false)
     private String youtubeUrl;
 
-    public static Music createMusic(final User user, final String coverImageUrl, final String genre, final String title, final String singer, final String youtubeUrl) {
+    public static Music createMusic(final User user, final String coverImageUrl, final String title, final String singer, final String youtubeUrl) {
         Music music = Music.builder()
                 .coverImageUrl(coverImageUrl)
-                .genre(genre)
                 .title(title)
                 .singer(singer)
                 .youtubeUrl(youtubeUrl)

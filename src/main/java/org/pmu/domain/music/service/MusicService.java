@@ -27,8 +27,8 @@ public class MusicService {
     @Transactional
     public MusicSaveResponseDto saveMusic(Long userId, MusicSaveRequestDto musicSaveRequestDto) {
         User findUser = userRepository.findByIdOrThrow(userId);
-        Music music = createMusic(findUser, musicSaveRequestDto.coverImageUrl(), musicSaveRequestDto.genre(),
-                musicSaveRequestDto.title(), musicSaveRequestDto.singer(), musicSaveRequestDto.youtubeUrl());
+        Music music = createMusic(findUser, musicSaveRequestDto.coverImageUrl(), musicSaveRequestDto.title(),
+                musicSaveRequestDto.singer(), musicSaveRequestDto.youtubeUrl());
         Music savedMusic = musicRepository.save(music);
         return MusicSaveResponseDto.of(savedMusic);
     }
