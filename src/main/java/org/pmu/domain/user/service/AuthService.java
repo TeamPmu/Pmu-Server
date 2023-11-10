@@ -37,11 +37,11 @@ public class AuthService {
     }
 
     public UserAuthResponseDto signUp(String token, UserSignUpRequestDto userSignUpRequestDto) {
-        validateDuplicateNickname(userSignUpRequestDto.getNickname());
+        validateDuplicateNickname(userSignUpRequestDto.nickname());
         String platformId = kakaoOAuthProvider.getKakaoPlatformId(token);
         validateDuplicateUser(platformId);
         String profileImageUrl = kakaoOAuthProvider.getKakaoUserProfileImageUrl(token);
-        User user = createUser(platformId, profileImageUrl, userSignUpRequestDto.getNickname());
+        User user = createUser(platformId, profileImageUrl, userSignUpRequestDto.nickname());
         User savedUser = userRepository.save(user);
         Token issuedToken = issueAccessTokenAndRefreshToken(savedUser);
         updateRefreshToken(savedUser, issuedToken.getRefreshToken());
@@ -50,7 +50,7 @@ public class AuthService {
 
     @Transactional(noRollbackFor = UnauthorizedException.class)
     public Token reissue(String refreshToken, UserReissueRequestDto userReissueRequestDto) {
-        Long userId = userReissueRequestDto.getUserId();
+        Long userId = userReissueRequestDto.userId();
         User findUser = getUser(userId);
         validateRefreshToken(userId, refreshToken, findUser.getRefreshToken());
         Token issuedToken = issueAccessTokenAndRefreshToken(findUser);
